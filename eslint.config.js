@@ -102,6 +102,41 @@ export default defineConfig(
 		}
 	},
 	{
+		// The code that may reach the browser: the types of Node.js are visible to every file of
+		// `src/` (one tsconfig for all), so ESLint refuses what only the server has. The environment
+		// is read through `$app/env/private` or `$app/env/public`.
+		files: ['src/**'],
+		ignores: [
+			'src/lib/server/**',
+			'src/**/*.server.ts',
+			'src/**/*.spec.ts',
+			'src/env.ts',
+			'src/**/*.d.ts'
+		],
+		rules: {
+			'no-restricted-globals': [
+				'error',
+				...['process', 'Buffer', 'global', 'require', '__dirname', '__filename'].map((name) => ({
+					name,
+					message:
+						'Only the server has it: move the code to `src/lib/server/` or a `.server.ts` file, and read the environment through `$app/env/public`.'
+				}))
+			],
+			'no-restricted-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							regex: '^node:',
+							message:
+								'A module of Node.js runs on the server only: import it from `src/lib/server/`.'
+						}
+					]
+				}
+			]
+		}
+	},
+	{
 		// A test replaces a function by one that does nothing.
 		files: ['**/*.spec.ts', '**/*.e2e.ts'],
 		rules: { '@typescript-eslint/no-empty-function': ['error', { allow: ['arrowFunctions'] }] }

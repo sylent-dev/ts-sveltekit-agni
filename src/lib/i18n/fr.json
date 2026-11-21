@@ -10,6 +10,8 @@
 	"error": {
 		"title": "Une erreur est survenue",
 		"notFound": "Cette page n’existe pas.",
+		"forbidden": "Vous n’avez pas accès à cette page.",
+		"badRequest": "La demande est incomplète ou invalide. Vérifiez les informations saisies.",
 		"unexpected": "Une erreur inattendue s’est produite. Réessayez dans un instant.",
 		"home": "Revenir à l’accueil"
 	}

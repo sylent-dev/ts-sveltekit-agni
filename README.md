@@ -1,6 +1,6 @@
 # Agni
 
-Agni lets French heating engineers, plumbers and refrigeration technicians produce the regulatory maintenance certificate at the end of a visit, have their client sign it on the phone, and email it as a PDF: « du rendez-vous à l'attestation signée, sans rien retaper ».
+Agni lets French heating engineers, plumbers and refrigeration technicians produce the regulatory maintenance certificate at the end of a visit, have their client sign it on the phone, and email it as a PDF: « du rendez-vous à l’attestation signée, sans rien retaper ».
 
 Version 1 is being built: see [specs.md](specs.md) for what it does and [roadmap.md](roadmap.md) for where it stands.
 

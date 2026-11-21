@@ -17,7 +17,7 @@ A rule is written here only once read in its official text (Légifrance), never 
 ## Later
 
 - **Heat pumps**: their maintenance certificate. **[OPEN]** Its text.
-- **Refrigerants**: the intervention form CERFA 15497*04, mandatory for categories I to IV, in force since 6 July 2024; a version *05 is announced. **[OPEN]** Whether a CERFA must be reproduced exactly as the official form.
+- **Refrigerants**: the intervention form CERFA 15497*04, in force since 6 July 2024 (**[OPEN]** its scope, read on the text: the wording « categories I to IV » heard before the project may be those of the certificate of capacity of the operator, not of the equipment); a version *05 is announced. **[OPEN]** Whether a CERFA must be reproduced exactly as the official form.
 - **BSFF**: the refrigerant tracking slip, through the Trackdéchets API. **[OPEN]** Its terms of use.
 
 ## Never

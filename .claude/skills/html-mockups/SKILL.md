@@ -27,7 +27,7 @@ Pitfalls met before:
 
 ## 2. Show it
 
-Copy `assets/serve.py` to `docs/mockups/serve.py`, and serve the repository root with it, so that the page reaches the images of the repository even in a sandboxed browser (Flatpak, Snap) that only receives the HTML file, and a reload never mixes old and new files (it sends `Cache-Control: no-store`). Use the port of the project, written in `docs/technical-choices.md` (Commands): two projects on the same port took each other's server over. Keep the server running in the background:
+Copy `assets/serve.py` to `docs/mockups/serve.py`, and serve the repository root with it (only `docs/` and `static/` answer: never `.env` nor the database, even on the local network), so that the page reaches the images of the repository even in a sandboxed browser (Flatpak, Snap) that only receives the HTML file, and a reload never mixes old and new files (it sends `Cache-Control: no-store`). Use the port of the project, written in `docs/technical-choices.md` (Commands): two projects on the same port took each other's server over. Keep the server running in the background:
 
 ```sh
 python3 docs/mockups/serve.py <port>

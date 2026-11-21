@@ -8,6 +8,10 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    # A week before a new version is proposed, so that a release found malicious has time to be
+    # withdrawn; the security updates don't wait.
+    cooldown:
+      default-days: 7
     groups:
       npm:
         patterns: ['*']
@@ -20,6 +24,10 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    # A week before a new version is proposed, so that a release found malicious has time to be
+    # withdrawn; the security updates don't wait.
+    cooldown:
+      default-days: 7
     groups:
       actions:
         patterns: ['*']

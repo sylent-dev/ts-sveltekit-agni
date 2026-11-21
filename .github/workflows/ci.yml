@@ -1,7 +1,7 @@
 # The checks run before every commit (npm run check, see Commands in docs/technical-choices.md),
 # on every pull request and every push to `main`: format, types, linters, unit tests, production
-# build and the tests in a browser (the width of every screen on a phone). They are skipped when
-# only the Markdown files and `docs/` change.
+# build and the tests in a browser (the width of every screen on a phone). When only the Markdown
+# files and `docs/` change, only the format is checked, since Prettier reads those files too.
 name: CI
 
 on:
@@ -34,33 +34,46 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          # The token of the job stays out of .git/config, where the code of the packages could read it.
+          persist-credentials: false
       - id: changes
         run: sh .github/scripts/code-changed.sh "$BASE" "$HEAD"
 
   check:
     name: Checks
     needs: changes
-    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CODE: ${{ needs.changes.outputs.code }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - run: sh .github/scripts/pinned-actions.sh
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      # The advisories of the packages that run in the application; those of the build tools are
-      # read by the dependency-reviewer agent.
-      - run: npm audit --omit=dev --audit-level=high
-      - run: npx playwright install --with-deps --only-shell chromium
-      - run: npm run check
+      # A documentation change: the format only.
+      - if: env.CODE != 'true'
+        run: npm run format:check
+      # The advisories of every package: with adapter-node, the devDependencies (Svelte, SvelteKit,
+      # Drizzle) are bundled and run in production too. The moderate ones accepted are written in
+      # docs/technical-choices.md (Dependencies).
+      - if: env.CODE == 'true'
+        run: npm audit --audit-level=high
+      - if: env.CODE == 'true'
+        run: npx playwright install --with-deps --only-shell chromium
+      - if: env.CODE == 'true'
+        run: npm run check
         env:
           DATABASE_URL: local.db
 
   # The one check the ruleset of `main` requires: it fails when a job above failed or was
-  # cancelled, and passes when they passed or were skipped (a documentation change). The jobs
-  # above can be renamed or added without touching the ruleset.
+  # cancelled, and passes when they passed. The jobs above can be renamed or added without
+  # touching the ruleset.
   ci:
     name: CI
     needs: [changes, check]

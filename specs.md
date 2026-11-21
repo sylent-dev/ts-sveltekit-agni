@@ -4,7 +4,7 @@ The expected behavior of Agni. A first draft, written at the setup (2026-11-22) 
 
 ## Idea
 
-At the end of a visit, a heating engineer, a plumber or a refrigeration technician produces the regulatory certificate on their phone, has the client sign it on the screen, and the application emails it to the client as a PDF. The promise: « du rendez-vous à l'attestation signée, sans rien retaper ».
+At the end of a visit, a heating engineer, a plumber or a refrigeration technician produces the regulatory certificate on their phone, has the client sign it on the screen, and the application emails it to the client as a PDF. The promise: « du rendez-vous à l’attestation signée, sans rien retaper ».
 
 - **Origin**: the owner saw a heating engineer use EasySAV (about 25 € a month): at the end of a boiler maintenance, giving a name, an email and an address was enough to receive the signed certificate by email.
 - **Name**: « Agni » means « fire » in Bengali (the owner's origins) and in Sanskrit; it is also the god of fire, messenger between the worlds: the tool links the craftsman, the client and the paperwork.
@@ -34,7 +34,7 @@ Mobile first. Out of version 1: an offline mode (the cellar without network) is 
 
 ## Out of scope
 
-- **Later**: the maintenance certificate of heat pumps; the refrigerant intervention form CERFA 15497*04 (mandatory for categories I to IV, in force since 6 July 2024; a version *05 is announced); maybe the refrigerant tracking slip (BSFF) through the Trackdéchets API.
+- **Later**: the maintenance certificate of heat pumps; the refrigerant intervention form CERFA 15497*04, in force since 6 July 2024, a version *05 announced (**[OPEN]** its scope, read on the text: the wording « categories I to IV » heard before the project may be those of the certificate of capacity of the operator, not of the equipment); maybe the refrigerant tracking slip (BSFF) through the Trackdéchets API.
 - **Never**: the VAT certificates 1300-SD and 1301-SD, abolished since 16 February 2025 (replaced by a mention on the quote or the invoice); hosting the manuals of the manufacturers (copyright); a catalog of error codes (the strength of EasySAV, backed by Dispart and Saint-Gobain: not our ground).
 
 ## Regulation

@@ -12,8 +12,9 @@ head=$2
 if [ -z "$base" ] || [ "$base" = 0000000000000000000000000000000000000000 ]; then
   code=true
 else
-  # Fails the job when a commit is missing, rather than skipping the checks.
-  files=$(git diff --name-only "$base...$head")
+  # Fails the job when a commit is missing, rather than skipping the checks. Without the
+  # renames, a file moved from `src/` to `docs/` lists both paths, and is checked.
+  files=$(git diff --no-renames --name-only "$base...$head")
   if printf '%s\n' "$files" | grep -qvE '(\.md$|^docs/|^$)'; then
     code=true
   else
