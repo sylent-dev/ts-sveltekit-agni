@@ -1,0 +1,16 @@
+{
+	"app": {
+		"name": "Agni",
+		"tagline": "Du rendez-vous à l’attestation signée, sans rien retaper."
+	},
+	"home": {
+		"title": "Agni — attestations d’entretien",
+		"soon": "L’application est en cours de construction."
+	},
+	"error": {
+		"title": "Une erreur est survenue",
+		"notFound": "Cette page n’existe pas.",
+		"unexpected": "Une erreur inattendue s’est produite. Réessayez dans un instant.",
+		"home": "Revenir à l’accueil"
+	}
+}

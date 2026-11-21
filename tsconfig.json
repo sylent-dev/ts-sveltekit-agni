@@ -1,0 +1,31 @@
+{
+	"extends": "$app/tsconfig",
+	"compilerOptions": {
+		"strict": true,
+		// Beyond `strict` (see Strictness of the code in docs/technical-choices.md): `list[0]` and
+		// `table[key]` may be `undefined`.
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		// A field left out is not a field set to `undefined`: the data of a certificate tells
+		// « not given » from « empty ».
+		"exactOptionalPropertyTypes": true,
+		// An error, where the compiler only greys the code out by default.
+		"allowUnreachableCode": false,
+		// Only types that can be erased (no enum, no namespace, no parameter property): Node.js runs
+		// the scripts by stripping their types.
+		"erasableSyntaxOnly": true,
+		"types": ["$app/types", "node"]
+	},
+	"include": [
+		"src",
+		"tests",
+		"vite.config.ts",
+		"prettier.config.js",
+		"eslint.config.js",
+		"stylelint.config.js",
+		"playwright.config.ts",
+		"drizzle.config.ts"
+	]
+}
