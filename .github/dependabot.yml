@@ -1,0 +1,25 @@
+# Monthly pull requests to update the npm packages and the GitHub Actions, each ecosystem in one
+# pull request. Read them with the dependency-reviewer agent. The security updates come apart, as
+# soon as an advisory is published (Dependabot security updates, turned on in the settings of the
+# repository).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      npm:
+        patterns: ['*']
+    ignore:
+      # The types of Node.js follow the version the application runs on (.nvmrc): raise their
+      # major version by hand, with .nvmrc and the engines of package.json.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']

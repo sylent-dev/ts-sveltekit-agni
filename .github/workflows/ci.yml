@@ -1,0 +1,72 @@
+# The checks run before every commit (npm run check, see Commands in docs/technical-choices.md),
+# on every pull request and every push to `main`: format, types, linters, unit tests, production
+# build and the tests in a browser (the width of every screen on a phone). They are skipped when
+# only the Markdown files and `docs/` change.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+# A new push to a pull request cancels its runs that are still going. Each push to `main` has a
+# group of its own, its commit, so that a documentation commit never cancels the run of a code one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: true
+
+env:
+  # The commits compared to tell a documentation change: the base of a pull request, or the
+  # previous commit of a push.
+  BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+  HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  changes:
+    name: Changed files
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.changes.outputs.code }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - id: changes
+        run: sh .github/scripts/code-changed.sh "$BASE" "$HEAD"
+
+  check:
+    name: Checks
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: sh .github/scripts/pinned-actions.sh
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # The advisories of the packages that run in the application; those of the build tools are
+      # read by the dependency-reviewer agent.
+      - run: npm audit --omit=dev --audit-level=high
+      - run: npx playwright install --with-deps --only-shell chromium
+      - run: npm run check
+        env:
+          DATABASE_URL: local.db
+
+  # The one check the ruleset of `main` requires: it fails when a job above failed or was
+  # cancelled, and passes when they passed or were skipped (a documentation change). The jobs
+  # above can be renamed or added without touching the ruleset.
+  ci:
+    name: CI
+    needs: [changes, check]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the results of the jobs
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
