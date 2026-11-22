@@ -1,0 +1,26 @@
+/*
+ * The base of every page. The design tokens (colors, sizes, typography) come with the design
+ * system (step 5 of roadmap.md), written in docs/branding.md; until then, the system font and a
+ * single spacing.
+ */
+:root {
+	--space-4: 1rem;
+
+	color-scheme: light dark;
+	font-family: system-ui, sans-serif;
+	line-height: 1.5;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+}
+
+main {
+	padding: var(--space-4);
+}

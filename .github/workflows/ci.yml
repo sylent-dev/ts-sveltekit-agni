@@ -1,0 +1,85 @@
+# The checks run before every commit (npm run check, see Commands in docs/technical-choices.md),
+# on every pull request and every push to `main`: format, types, linters, unit tests, production
+# build and the tests in a browser (the width of every screen on a phone). When only the Markdown
+# files and `docs/` change, only the format is checked, since Prettier reads those files too.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+# A new push to a pull request cancels its runs that are still going. Each push to `main` has a
+# group of its own, its commit, so that a documentation commit never cancels the run of a code one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: true
+
+env:
+  # The commits compared to tell a documentation change: the base of a pull request, or the
+  # previous commit of a push.
+  BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+  HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  changes:
+    name: Changed files
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.changes.outputs.code }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          # The token of the job stays out of .git/config, where the code of the packages could read it.
+          persist-credentials: false
+      - id: changes
+        run: sh .github/scripts/code-changed.sh "$BASE" "$HEAD"
+
+  check:
+    name: Checks
+    needs: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CODE: ${{ needs.changes.outputs.code }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: sh .github/scripts/pinned-actions.sh
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # A documentation change: the format only.
+      - if: env.CODE != 'true'
+        run: npm run format:check
+      # The advisories of every package: with adapter-node, the devDependencies (Svelte, SvelteKit,
+      # Drizzle) are bundled and run in production too. The moderate ones accepted are written in
+      # docs/technical-choices.md (Dependencies).
+      - if: env.CODE == 'true'
+        run: npm audit --audit-level=high
+      - if: env.CODE == 'true'
+        run: npx playwright install --with-deps --only-shell chromium
+      - if: env.CODE == 'true'
+        run: npm run check
+        env:
+          DATABASE_URL: local.db
+
+  # The one check the ruleset of `main` requires: it fails when a job above failed or was
+  # cancelled, and passes when they passed. The jobs above can be renamed or added without
+  # touching the ruleset.
+  ci:
+    name: CI
+    needs: [changes, check]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the results of the jobs
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
